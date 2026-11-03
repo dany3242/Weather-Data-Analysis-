@@ -184,3 +184,22 @@ axes[1, 2].axis("off")
 
 plt.tight_layout()
 plt.show()
+
+summer_DAYS = 0
+high_summer_DAYS = 0
+tropic_DAYS = 0
+
+        
+for weather_station in all_weather_data[file_name]:
+    for year in all_weather_data[file_name][y]:
+        for month in all_weather_data[file_name][y][m]:
+            for day in all_weather_data[file_name][y][m][d]:
+                for data in all_weather_data[file_name][y][m][d][max_temp]:
+                    
+                    if data >= 20:
+                        summer_DAYS += 1
+                    elif data >= 25:
+                        high_summer_DAYS += 1
+                    elif data >= 30:
+                        tropic_DAYS += 1
+
