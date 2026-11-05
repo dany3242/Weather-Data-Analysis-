@@ -111,73 +111,29 @@ for month in valid_values_for_year:
     if valid_values_for_year[month]["max_wind"]:
         max_wind_list.append(max(valid_values_for_year[month]["max_wind"]))
 
-print(max_snow_list)
-print(tot_precip_list)
-print(min_temp_list)
-print(max_temp_list)
-print(max_wind_list)
-
 months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
-
-fig, axes = plt.subplots(2, 3, figsize=(15, 8))
-
-
-axes[0, 0].plot(range(1, 13), max_snow_list)
-axes[0, 0].set_title("Max Snow Depth (mm)")
-axes[0, 0].grid()
-axes[0, 0].set_xticks(range(1, 13), months)
-axes[0, 0].fill_between(
-    range(1, 13),
-    max_snow_list,
-    alpha=0.3
-)
-axes[0, 0].set_xlim(1, 12)
-
-axes[0, 1].plot(range(1, 13), tot_precip_list)
-axes[0, 1].set_title("Total precip. (mm)")
-axes[0, 1].grid()
-axes[0, 1].set_xticks(range(1, 13), months)
-axes[0, 1].fill_between(
-    range(1, 13),
-    tot_precip_list,
-    alpha=0.3
-)
-axes[0, 1].set_xlim(1, 12)
-
-axes[0, 2].plot(range(1, 13), max_wind_list)
-axes[0, 2].set_title("Max wind (m/s)")
-axes[0, 2].grid()
-axes[0, 2].set_xticks(range(1, 13), months)
-axes[0, 2].fill_between(
-    range(1, 13),
-    max_wind_list,
-    alpha=0.3
-)
-axes[0, 2].set_xlim(1, 12)
-
-axes[1, 0].plot(range(1, 13), max_temp_list)
-axes[1, 0].set_title("Max temp (C)")
-axes[1, 0].grid()
-axes[1, 0].set_xticks(range(1, 13), months)
-axes[1, 0].fill_between(
-    range(1, 13),
-    max_temp_list,
-    alpha=0.3
-)
-axes[1, 0].set_xlim(1, 12)
+fig, axes = plt.subplots(2, 3, figsize=(14, 8))
 
 
-axes[1, 1].plot(range(1, 13), min_temp_list)
-axes[1, 1].set_title("Min temp (C)")
-axes[1, 1].grid()
-axes[1, 1].set_xticks(range(1, 13), months)
-axes[1, 1].fill_between(
-    range(1, 13),
-    min_temp_list,
-    alpha=0.3
-)
-axes[1, 1].set_xlim(1, 12)
+def plot_graf(ax1: int, ax2: int, list: list, title: str):
+    
+    axes[ax1, ax2].plot(range(1, 13), list)
+    axes[ax1, ax2].set_title(title)
+    axes[ax1, ax2].grid()
+    axes[ax1, ax2].set_xticks(range(1, 13), months)
+    axes[ax1, ax2].fill_between(
+        range(1, 13),
+        list,
+        alpha=0.3
+    )
+    axes[0, 0].set_xlim(1, 12)
+
+plot_graf(0, 0, max_snow_list, "Max Snow Depth (mm)")
+plot_graf(0, 1, tot_precip_list, "Total precip. (mm)")
+plot_graf(0, 2, max_wind_list, "Max wind (m/s)")
+plot_graf(1, 0, max_temp_list, "Max temp (C)")
+plot_graf(1, 1, min_temp_list, "Min temp (C)")
 
 
 axes[1, 2].axis("off")
