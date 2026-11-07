@@ -1,7 +1,7 @@
 import csv
 import matplotlib.pyplot as plt
 
-file_name = "oslo_blindern_1954_2025_med_makstemperatur.csv"
+file_name = "venabu_1954_2025_med_makstemperatur.csv"
 
 all_weather_data = {}
 
@@ -12,6 +12,20 @@ def magnitude(value: str) -> float | None:
         return float((value).replace(",", "."))
     else:
         return None
+
+def plot_graf(ax1: int, ax2: int, list: list, title: str):
+    
+    axes[ax1, ax2].plot(range(1, 13), list)
+    axes[ax1, ax2].set_title(title)
+    axes[ax1, ax2].grid()
+    axes[ax1, ax2].set_xticks(range(1, 13), months)
+    axes[ax1, ax2].fill_between(
+        range(1, 13),
+        list,
+        alpha=0.3
+    )
+    axes[0, 0].set_xlim(1, 12)
+
 
 try:
     with open(file_name, "r", encoding="utf-8") as f:
@@ -48,6 +62,12 @@ try:
 except FileNotFoundError:
     print("Could not find the file.")
     exit()
+
+
+if not chosen_year in all_weather_data[file_name]:
+    print("No data for chosen year")
+    exit()
+
 
 valid_values_for_year = {}
 
@@ -111,32 +131,17 @@ for month in valid_values_for_year:
     if valid_values_for_year[month]["max_wind"]:
         max_wind_list.append(max(valid_values_for_year[month]["max_wind"]))
 
+
+
 months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
 fig, axes = plt.subplots(2, 3, figsize=(14, 8))
-
-
-def plot_graf(ax1: int, ax2: int, list: list, title: str):
-    
-    axes[ax1, ax2].plot(range(1, 13), list)
-    axes[ax1, ax2].set_title(title)
-    axes[ax1, ax2].grid()
-    axes[ax1, ax2].set_xticks(range(1, 13), months)
-    axes[ax1, ax2].fill_between(
-        range(1, 13),
-        list,
-        alpha=0.3
-    )
-    axes[0, 0].set_xlim(1, 12)
 
 plot_graf(0, 0, max_snow_list, "Max Snow Depth (mm)")
 plot_graf(0, 1, tot_precip_list, "Total precip. (mm)")
 plot_graf(0, 2, max_wind_list, "Max wind (m/s)")
 plot_graf(1, 0, max_temp_list, "Max temp (C)")
 plot_graf(1, 1, min_temp_list, "Min temp (C)")
-
-
 axes[1, 2].axis("off")
-
 plt.tight_layout()
 plt.show()
