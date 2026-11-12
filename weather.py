@@ -1,11 +1,23 @@
 import csv
 import matplotlib.pyplot as plt
 
-file_name = "_1954_2025_med_makstemperatur.csv"
+file_name = "tromsoe_1954_2025_med_makstemperatur.csv"
+file_2 = "oslo_blindern_1954_2025_med_makstemperatur.csv"
+file_3 = "roeros_1954_2025_med_makstemperatur.csv"
+file_4 = "vaernes_1954_2025_med_makstemperatur.csv"
+file_5 = "venabu_1954_2025_med_makstemperatur.csv"
 
+file_list = [file_name,file_2,file_3,file_4,file_5]
 all_weather_data = {}
+chosen_year = input("Enter a year (1954 - 2025): ")
+for i,file in enumerate(file_list):
+    print (f"{i} {file}")
+chosen_station = int(input("enter a number corresponding to a station in the list"))
+if ((0<=chosen_station) and (chosen_station<=4)): 
+    chosen_station = file_list[chosen_station]
+else:
+    print("write a number [0,4] ya dumb dumb")
 
-chosen_year = input("Enter a year: ")
 
 def magnitude(value: str) -> float | None:
     if value.strip() not in ("-", " ", ""):
@@ -25,49 +37,52 @@ def plot_graf(ax1: int, ax2: int, data_list: list, title: str):
         alpha=0.3
     )
     axes[ax1, ax2].set_xlim(1, 12)
-    axes[ax1, ax2].grid(True)
 
 
-try:
-    with open(file_name, "r", encoding="utf-8") as f:
-        data = csv.DictReader(f, delimiter=";")
-        
-        if file_name not in all_weather_data:
-            all_weather_data[file_name] = {}
-            for row in data:
+def data_reader(file_name,all_weather_data):
+    try:
+        with open(file_name, "r", encoding="utf-8") as f:
+            data = csv.DictReader(f, delimiter=";")
+            
+            if file_name not in all_weather_data:
+                all_weather_data[file_name] = {}
+                for row in data:
 
-                if (not row.get("Tid(norsk normaltid)") or
-                "Data er gyldig" in row["Tid(norsk normaltid)"]): continue
+                    if (not row.get("Tid(norsk normaltid)") or
+                    "Data er gyldig" in row["Tid(norsk normaltid)"]): continue
 
-                parts = row["Tid(norsk normaltid)"].split('.')
-                d = parts[0]
-                m = parts[1]
-                y = parts[2]
+                    parts = row["Tid(norsk normaltid)"].split('.')
+                    d = parts[0]
+                    m = parts[1]
+                    y = parts[2]
 
-                if not y in all_weather_data[file_name]:
-                    all_weather_data[file_name][y] = {}
+                    if not y in all_weather_data[file_name]:
+                        all_weather_data[file_name][y] = {}
 
-                if not m in all_weather_data[file_name][y]:
-                    all_weather_data[file_name][y][m] = {} 
-                            
-                if not d in all_weather_data[file_name][y][m]:
-                    all_weather_data[file_name][y][m][d] = {
-                        "max_temp": magnitude(row["Maksimumstemperatur (døgn)"]),
-                        "avg_temp": magnitude(row["Middeltemperatur (døgn)"]),
-                        "precip": magnitude(row["Nedbør (døgn)"]),
-                        "wind": magnitude(row["Høyeste middelvind (døgn)"]),    
-                        "snow": magnitude(row["Snødybde"])                       
-                   
-                    }
+                    if not m in all_weather_data[file_name][y]:
+                        all_weather_data[file_name][y][m] = {} 
+                                
+                    if not d in all_weather_data[file_name][y][m]:
+                        all_weather_data[file_name][y][m][d] = {
+                            "max_temp": magnitude(row["Maksimumstemperatur (døgn)"]),
+                            "avg_temp": magnitude(row["Middeltemperatur (døgn)"]),
+                            "precip": magnitude(row["Nedbør (døgn)"]),
+                            "wind": magnitude(row["Høyeste middelvind (døgn)"]),    
+                            "snow": magnitude(row["Snødybde"])                                   
+                        }
+    except FileNotFoundError:
+        print("Could not find the file.")
+        exit()
+    return all_weather_data
 
-except FileNotFoundError:
-    print("Could not find the file.")
-    exit()
 
+for j in file_list:
+    data = data_reader(j,all_weather_data)
+    all_weather_data[j]=data[j]
 
-if not chosen_year in all_weather_data[file_name]:
-    print("No data for chosen year")
-    exit()
+if not chosen_year in all_weather_data[chosen_station]:
+        print("No data for chosen year")
+        exit()
 
 
 valid_values_for_year = {}
@@ -108,13 +123,10 @@ tot_precip_dict = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 
 max_temp_dict = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0}
 min_temp_dict = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0}
 max_wind_dict = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0}
-mean_wind_dict = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0}
-min_wind_dict = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0}
 
 
 for month in valid_values_for_year:
     m_int = int(month) 
-   
     max_snow = 0
     if valid_values_for_year[month]["max_snow"]:
         current_max = max(valid_values_for_year[month]["max_snow"])
@@ -126,42 +138,30 @@ for month in valid_values_for_year:
         tot_precip_dict[m_int] = total_precip
 
     if valid_values_for_year[month]["max_temp"]:
-        max_temp_dict[m_int] = max(valid_values_for_year[month]["max_temp"]) 
+        max_temp_dict[m_int] = max(valid_values_for_year[month]["max_temp"]) # И здесь исправил max_temp вместо avg_temp
         min_temp_dict[m_int] = min(valid_values_for_year[month]["avg_temp"])
 
     if valid_values_for_year[month]["max_wind"]:
         max_wind_dict[m_int] = max(valid_values_for_year[month]["max_wind"])
-        mean_wind_dict[m_int] = int((sum(valid_values_for_year[month]["max_wind"])) / len(valid_values_for_year[month]["max_wind"]))
-        min_wind_dict[m_int] = min(valid_values_for_year[month]["max_wind"])
 
 
 
 
 months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
+
+
 fig, axes = plt.subplots(2, 3, figsize=(14, 8))
 
-
-
-
 plot_graf(0, 0, list(max_snow_dict.values()), "Max Snow Depth (mm)")
-
 plot_graf(0, 1, list(tot_precip_dict.values()), "Total precip. (mm)")
-
 plot_graf(0, 2, list(max_wind_dict.values()), "Max wind (m/s)")
-plot_graf(0, 2, list(mean_wind_dict.values()),"Mean wind")
-plot_graf(0, 2, list(min_wind_dict.values()),"Max/Mean/Min wind (m/s)")
-
-
 plot_graf(1, 0, list(max_temp_dict.values()), "Max temp (C)")
-
-plot_graf(1, 0, list(min_temp_dict.values()), "Max/Min temp (C)")
-
+plot_graf(1, 1, list(min_temp_dict.values()), "Min temp (C)")
 
 
 
 summer_days = {}
-
 
 for year in sorted(all_weather_data[file_name].keys()):
     if year not in summer_days:
@@ -201,3 +201,70 @@ ax_six.set_xlim(min(years_x), max(years_x))
 
 plt.tight_layout()
 plt.show()
+
+
+#-------------------
+def legal_years(station):
+    legal_years = {}
+    day_counter = 0
+    if not station in legal_years:
+        legal_years[station] = {}
+    for i in all_weather_data[station]:
+        for month in all_weather_data[station][i]:
+            for day in all_weather_data[station][i][month]:
+                for key in all_weather_data[station][i][month][day]:
+                    if (key == 'avg_temp') and (type(all_weather_data[station][i][month][day][key]) == float):
+                        day_counter += 1
+        if day_counter >= 300:
+            if not i in legal_years[station]:
+                legal_years[station][i]= day_counter
+        day_counter = 0
+    return legal_years[station]
+
+def avg_temp(station,years):
+    sum_temp = 0
+    avg_temps = {}
+    if not station in avg_temps:
+        avg_temps[station] = {}
+    for i in years:
+        print(i)
+        for month in all_weather_data[station][i]:
+            for day in all_weather_data[station][i][month]:
+                for key in all_weather_data[station][i][month][day]:
+                    if (key == 'avg_temp'):
+                        temp = (all_weather_data[station][i][month][day][key])
+                        if type(temp) == float:
+                            sum_temp += temp
+                        #else:
+                            #print(f"{day} {month} {i}")
+        avg_temps[station][i]=round((sum_temp/years[i]),2)
+        sum_temp = 0
+    return avg_temps
+
+year_holder = legal_years(file_name)
+temp_tester = avg_temp(file_name,year_holder)
+
+
+average_temp = {}
+station = 0
+year = 0
+if average_temp[station] not in average_temp:
+    average_temp[station] = station
+    if average_temp[station][year] not in average_temp[station]:
+        average_temp[station][year] = year
+    average_temp[station][year]['count']=1
+    average_temp[station]['sum']=station
+
+plt.plot(year)
+
+for i in range (len(average_temp[station])):
+    plt.subplot
+
+graf_y = 0
+graf_x = 0
+list1 = [1,2,3,4,5]
+list2 = list1
+list1.pop(-1)
+
+
+print (list1 + list2)
