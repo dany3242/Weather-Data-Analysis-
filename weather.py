@@ -1,11 +1,11 @@
 import csv
 import matplotlib.pyplot as plt
 
-file_name = "tromsoe_1954_2025_med_makstemperatur.csv"
+file_name = "_1954_2025_med_makstemperatur.csv"
 
 all_weather_data = {}
 
-chosen_year = input("Enter a year (1954 - 2025): ")
+chosen_year = input("Enter a year: ")
 
 def magnitude(value: str) -> float | None:
     if value.strip() not in ("-", " ", ""):
@@ -25,6 +25,7 @@ def plot_graf(ax1: int, ax2: int, data_list: list, title: str):
         alpha=0.3
     )
     axes[ax1, ax2].set_xlim(1, 12)
+    axes[ax1, ax2].grid(True)
 
 
 try:
@@ -107,6 +108,8 @@ tot_precip_dict = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 
 max_temp_dict = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0}
 min_temp_dict = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0}
 max_wind_dict = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0}
+mean_wind_dict = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0}
+min_wind_dict = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0}
 
 
 for month in valid_values_for_year:
@@ -123,11 +126,13 @@ for month in valid_values_for_year:
         tot_precip_dict[m_int] = total_precip
 
     if valid_values_for_year[month]["max_temp"]:
-        max_temp_dict[m_int] = max(valid_values_for_year[month]["max_temp"]) # И здесь исправил max_temp вместо avg_temp
+        max_temp_dict[m_int] = max(valid_values_for_year[month]["max_temp"]) 
         min_temp_dict[m_int] = min(valid_values_for_year[month]["avg_temp"])
 
     if valid_values_for_year[month]["max_wind"]:
         max_wind_dict[m_int] = max(valid_values_for_year[month]["max_wind"])
+        mean_wind_dict[m_int] = int((sum(valid_values_for_year[month]["max_wind"])) / len(valid_values_for_year[month]["max_wind"]))
+        min_wind_dict[m_int] = min(valid_values_for_year[month]["max_wind"])
 
 
 
@@ -144,10 +149,13 @@ plot_graf(0, 0, list(max_snow_dict.values()), "Max Snow Depth (mm)")
 plot_graf(0, 1, list(tot_precip_dict.values()), "Total precip. (mm)")
 
 plot_graf(0, 2, list(max_wind_dict.values()), "Max wind (m/s)")
+plot_graf(0, 2, list(mean_wind_dict.values()),"Mean wind")
+plot_graf(0, 2, list(min_wind_dict.values()),"Max/Mean/Min wind (m/s)")
+
 
 plot_graf(1, 0, list(max_temp_dict.values()), "Max temp (C)")
 
-plot_graf(1, 1, list(min_temp_dict.values()), "Min temp (C)")
+plot_graf(1, 0, list(min_temp_dict.values()), "Max/Min temp (C)")
 
 
 
