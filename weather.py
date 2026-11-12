@@ -8,12 +8,15 @@ file_4 = "vaernes_1954_2025_med_makstemperatur.csv"
 file_5 = "venabu_1954_2025_med_makstemperatur.csv"
 
 file_list = [file_name,file_2,file_3,file_4,file_5]
+
 all_weather_data = {}
+
 chosen_year = input("Enter a year (1954 - 2025): ")
+
 for i,file in enumerate(file_list):
     print (f"{i} {file}")
 chosen_station = int(input("enter a number corresponding to a station in the list"))
-if ((0<=chosen_station) and (chosen_station<=4)): 
+if (0<=chosen_station<=4): 
     chosen_station = file_list[chosen_station]
 else:
     print("write a number [0,4] ya dumb dumb")
@@ -37,6 +40,7 @@ def plot_graf(ax1: int, ax2: int, data_list: list, title: str):
         alpha=0.3
     )
     axes[ax1, ax2].set_xlim(1, 12)
+    axes[ax1, ax2].grid(True)
 
 
 def data_reader(file_name,all_weather_data):
@@ -123,6 +127,8 @@ tot_precip_dict = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 
 max_temp_dict = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0}
 min_temp_dict = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0}
 max_wind_dict = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0}
+mean_wind_dict = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0}
+min_wind_dict = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0}
 
 
 for month in valid_values_for_year:
@@ -138,11 +144,14 @@ for month in valid_values_for_year:
         tot_precip_dict[m_int] = total_precip
 
     if valid_values_for_year[month]["max_temp"]:
-        max_temp_dict[m_int] = max(valid_values_for_year[month]["max_temp"]) # И здесь исправил max_temp вместо avg_temp
+        max_temp_dict[m_int] = max(valid_values_for_year[month]["max_temp"])
         min_temp_dict[m_int] = min(valid_values_for_year[month]["avg_temp"])
 
     if valid_values_for_year[month]["max_wind"]:
         max_wind_dict[m_int] = max(valid_values_for_year[month]["max_wind"])
+        mean_wind_dict[m_int] = int(sum(valid_values_for_year[month]["max_wind"]) / len(valid_values_for_year[month]["max_wind"]))
+        min_wind_dict[m_int] = min(valid_values_for_year[month]["max_wind"])
+
 
 
 
@@ -155,9 +164,11 @@ fig, axes = plt.subplots(2, 3, figsize=(14, 8))
 
 plot_graf(0, 0, list(max_snow_dict.values()), "Max Snow Depth (mm)")
 plot_graf(0, 1, list(tot_precip_dict.values()), "Total precip. (mm)")
-plot_graf(0, 2, list(max_wind_dict.values()), "Max wind (m/s)")
-plot_graf(1, 0, list(max_temp_dict.values()), "Max temp (C)")
-plot_graf(1, 1, list(min_temp_dict.values()), "Min temp (C)")
+plot_graf(0, 2, list(max_wind_dict.values()), ".")
+plot_graf(0, 2, list(mean_wind_dict.values()), ".")
+plot_graf(0, 2, list(min_wind_dict.values()), "Max/Mean/Min wind (m/s)")
+plot_graf(1, 0, list(max_temp_dict.values()), ".")
+plot_graf(1, 0, list(min_temp_dict.values()), "Max/Min temp (C)")
 
 
 
@@ -215,9 +226,8 @@ def legal_years(station):
                 for key in all_weather_data[station][i][month][day]:
                     if (key == 'avg_temp') and (type(all_weather_data[station][i][month][day][key]) == float):
                         day_counter += 1
-        if day_counter >= 300:
-            if not i in legal_years[station]:
-                legal_years[station][i]= day_counter
+        if day_counter >= 300 and not i in legal_years[station]:
+            legal_years[station][i]= day_counter
         day_counter = 0
     return legal_years[station]
 
