@@ -168,7 +168,7 @@ plot_graf(0, 2, list(max_wind_dict.values()), ".")
 plot_graf(0, 2, list(mean_wind_dict.values()), ".")
 plot_graf(0, 2, list(min_wind_dict.values()), "Max/Mean/Min wind (m/s)")
 plot_graf(1, 0, list(max_temp_dict.values()), ".")
-plot_graf(1, 0, list(min_temp_dict.values()), "Max/Min temp (C)")
+plot_graf(1, 1, list(min_temp_dict.values()), "Max/Min temp (C)")
 
 
 
